@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { BrowserProvider, formatEther } from "ethers";
 
-// Estendere l'interfaccia Window per includere ethereum
 declare global {
   interface Window {
     ethereum: any;
@@ -17,8 +16,8 @@ const printBalance: React.FC = () => {
       const getBalance = async () => {
         try {
           const signer = await provider.getSigner();
-          const address = await signer.getAddress(); // Ottieni l'indirizzo del signer
-          const balance = await provider.getBalance(address); // Usa l'indirizzo per ottenere il saldo
+          const address = await signer.getAddress();
+          const balance = await provider.getBalance(address);
           setBalance(formatEther(balance));
         } catch (error) {
           console.error("Errore nell'ottenere il saldo:", error);

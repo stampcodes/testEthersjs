@@ -22,7 +22,7 @@ const InfoContract: React.FC = () => {
     event.preventDefault();
     const provider = new BrowserProvider(window.ethereum);
     const formData = new FormData(event.target);
-    const address = formData.get("addr") as string; // Ottieni l'indirizzo dal form
+    const address = formData.get("addr") as string;
     const contract = new Contract(address, erc20abi, provider);
 
     const tokenName = await contract.name();
