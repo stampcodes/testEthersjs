@@ -46,3 +46,7 @@
   justify-content: space-around;
   align-items: center;
 }
+
+.btn {
+  margin-top: 50px;
+}

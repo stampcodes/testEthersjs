@@ -18,6 +18,11 @@ const InfoContract: React.FC = () => {
     totalSupply: "-",
   });
 
+  const [balanceInfo, setBalanceInfo] = useState({
+    address: "-",
+    balance: "-",
+  });
+
   const getContractInfo = async (event: any) => {
     event.preventDefault();
     const provider = new BrowserProvider(window.ethereum);
@@ -35,6 +40,31 @@ const InfoContract: React.FC = () => {
       tokenSymbol: tokenSymbol,
       totalSupply: formatEther(totalSupply.toString()),
     });
+  };
+
+  const getMyBalance = async () => {
+    const provider = new BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const contract = new Contract(contractInfo.address, erc20abi, provider);
+    const signer = await provider.getSigner();
+    const signerAddress = await signer.getAddress();
+    const balance = await contract.balanceOf(signerAddress);
+
+    setBalanceInfo({
+      address: signerAddress,
+      balance: formatEther(balance),
+    });
+    return formatEther(balance);
+  };
+
+  const handleTransfer = async (e: any) => {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    const provider = new BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = await provider.getSigner();
+    const contract = new Contract(contractInfo.address, erc20abi, signer);
+    await contract.transfer(data.get("recipient"), data.get("amount"));
   };
 
   return (
@@ -60,6 +90,41 @@ const InfoContract: React.FC = () => {
         </div>
         <button type="submit">Get Info</button>
       </form>
+
+      <button type="submit" onClick={getMyBalance} className="btn">
+        Get my balance
+      </button>
+      <div>
+        <h2>My Balance</h2>
+        <p>
+          {balanceInfo.balance} {contractInfo.tokenSymbol}
+        </p>
+      </div>
+      <div>
+        <div>
+          <h1>Write to contract</h1>
+
+          <form onSubmit={handleTransfer}>
+            <div>
+              <input
+                type="text"
+                name="recipient"
+                placeholder="Recipient address"
+              />
+            </div>
+            <div>
+              <input
+                type="text"
+                name="amount"
+                placeholder="Amount to transfer"
+              />
+            </div>
+            <footer>
+              <button type="submit">Transfer</button>
+            </footer>
+          </form>
+        </div>
+      </div>
     </>
   );
 };
